@@ -3,7 +3,7 @@ plugins {
     id 'org.springframework.boot'
 }
 group = 'dev.workbench'
-version = '0.2.0'
+version = '0.3.0'
 java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 repositories { mavenCentral() }
 dependencies {
