@@ -10,27 +10,27 @@
     {
       "name": "articles.csv",
       "rows": 8,
-      "sha256": "f4bc876f8ff27a46589f2baabcf56aecdb0509c4fe521fed7788e26713a7bbde"
+      "sha256": "1935cc648fbf52143b62a7739d2f880672596a391b5c0a3e2858fc2bd0517f0b"
     },
     {
       "name": "feedback.csv",
       "rows": 284,
-      "sha256": "68c389d9cfde686993f2639244a7834ebdae9bb9d985b5579279d6f74189b03b"
+      "sha256": "b75f596ec13a862adcd15731b8be89484932011b2e9eb8d0dfaf59dd3a121d1b"
     },
     {
       "name": "reading-events-01.csv",
       "rows": 1246,
-      "sha256": "812f7c8b15bff591b1997aa18ee16719329b16469aee210c21a844456695f466"
+      "sha256": "22a823f6f9205e29d523792ba2f0e15f55a481c7ff77f0bfb23d7dd2140da9b0"
     },
     {
       "name": "reading-events-02.csv",
       "rows": 1293,
-      "sha256": "8314889ef227549ce4a788f63e914b39fde5a6e5c42947e947a56d3a9a6e4767"
+      "sha256": "007eda33282a86a1181692e5894c5b2ef90be22fe5a37daff5590c9d71003279"
     },
     {
       "name": "support-cases.csv",
       "rows": 84,
-      "sha256": "4a960734bc0156c528715244f5887ded8182d21e772afe2ae1ce1544e5fd4eae"
+      "sha256": "c0ef1dd0217d6cf8a9d6d5dae273f0718aded052049c76c34ffe5ed13d765b6a"
     }
   ]
 }
