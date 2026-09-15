@@ -1,6 +1,6 @@
 {
   "name": "article-workbench",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "description": "文章协作与阅读分析考核起始工程",
   "license": "GPL-3.0-only",
