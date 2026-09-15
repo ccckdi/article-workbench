@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>文章工作台</title>
+    <link rel="stylesheet" href="/public.css" />
+  </head>
+  <body>
+    <div class="public-site">
+      <header class="public-header">
+        <a class="brand" href="/"
+          ><span class="brand-mark">文</span
+          ><span>文章工作台<small>ARTICLE WORKBENCH</small></span></a
+        ><a class="button secondary" href="/console/">进入工作台 →</a>
+      </header>
+      <main class="public-main">
+        <section class="public-hero">
+          <p class="eyebrow">OUR JOURNAL</p>
+          <h1>分享所见，<br />记录所想。</h1>
+          <p>在文字中交换观点，在分享中发现新的可能。</p>
+        </section>
+        <div class="section-heading">
+          <h2>最新文章</h2>
+          <span th:text="${result.total + ' 篇内容'}"></span>
+        </div>
+        <div class="public-grid">
+          <a
+            th:each="article,stat : ${result.items}"
+            class="public-card"
+            th:href="@{/articles/{id}(id=${article.id})}"
+            ><span
+              class="card-number"
+              th:text="${(result.page - 1) * result.size + stat.count}"
+            ></span>
+            <h2 th:text="${article.title}"></h2>
+            <p th:text="${article.summary()}"></p>
+            <div><span th:text="${article.authorName}"></span><b>↗</b></div></a
+          >
+        </div>
+        <div th:if="${result.total == 0}" class="empty">
+          <h2>还没有公开文章</h2>
+          <p>新的内容即将到来。</p>
+        </div>
+        <div class="pagination" th:if="${result.total > result.size}">
+          <a
+            class="button"
+            th:if="${result.hasPrevious()}"
+            th:href="@{/(page=${result.page - 1})}"
+            >上一页</a
+          ><span th:text="${'第 ' + result.page + ' 页'}"></span
+          ><a
+            class="button"
+            th:if="${result.hasNext()}"
+            th:href="@{/(page=${result.page + 1})}"
+            >下一页</a
+          >
+        </div>
+      </main>
+      <footer class="public-footer">
+        <span>文章工作台</span><span>记录想法，让内容发生。</span>
+      </footer>
+    </div>
+  </body>
+</html>

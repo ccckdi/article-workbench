@@ -1,0 +1,4 @@
+# Build permissions used by the corresponding Halo UI dependencies.
+allowBuilds:
+  "@parcel/watcher": true
+  esbuild: true

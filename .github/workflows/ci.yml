@@ -11,11 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run check
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+          node-version: 24
+      - run: corepack pnpm -C ui install --frozen-lockfile
+      - run: corepack pnpm -C ui typecheck
+      - run: corepack pnpm -C ui test
+      - run: corepack pnpm -C ui build
+      - run: ./gradlew spotlessCheck :backend:test :backend:bootJar
+      - run: corepack pnpm -C ui exec playwright install --with-deps chromium
+      - run: corepack pnpm -C ui test:e2e

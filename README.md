@@ -1,6 +1,6 @@
 # 文章工作台
 
-AI 全栈开发考核起始工程 · v0.1.0
+AI 全栈开发考核起始工程 · v0.2.0
 
 ## 任务
 
@@ -25,30 +25,44 @@ AI 全栈开发考核起始工程 · v0.1.0
 
 ## 工程已有能力
 
-- 登录、退出和服务端会话；六个演示账号及作者、编辑、审核、发布角色。
-- 文章列表、搜索、分页、草稿创建与保存、发布和取消发布、公开文章阅读。
-- 作者访问自己的文章，编辑可以修改团队文章，发布人员可以发布。审核账号目前可以阅读团队文章。
-- SQLite 持久化、基础输入校验、API 测试与浏览器测试。
+- 登录、退出、服务端会话、CSRF 校验及作者、编辑、审核、发布角色。
+- 文章列表、搜索、分页、草稿创建与保存、发布和取消发布。
+- 作者访问自己的文章，编辑修改团队文章，发布人员负责发布；审核账号目前可以阅读团队文章。
+- Vue 工作台、Thymeleaf 公开列表与阅读页、H2 文件数据库、初始化数据和自动化测试。
 
-当前文章直接保存到同一条内容记录。发布人员可以直接发布；保存已发布文章会更新公开内容，过期编辑也会覆盖当前内容。工程尚无正式提交、审核决议、独立内容版本、冲突处理和审计记录，需要按 R1–R6 完成。
+当前文章保存到同一条内容记录。发布人员可以直接发布；保存已发布文章会更新公开内容，过期编辑也会覆盖当前内容。正式提交、审核决议、独立内容版本、冲突处理和审计记录需要按 R1–R6 完成。
+
+## 技术与复用
+
+| 部分       | 技术                                                                      |
+| ---------- | ------------------------------------------------------------------------- |
+| 后端       | Java 21、Spring Boot 4.1.1、WebFlux、Spring Security                      |
+| 数据访问   | Spring Data R2DBC、H2 文件数据库                                          |
+| 工作台     | Vue 3、TypeScript、Pinia、Vue Router、Tailwind CSS                        |
+| 公开阅读   | Thymeleaf                                                                 |
+| 构建与测试 | Gradle Wrapper、Node.js 24、pnpm 11.17.0、Vite、JUnit、Vitest、Playwright |
+
+复用 Halo v2.26.1 的分页处理、口令编码配置、状态组件、空页面组件、日期工具和构建配置。复用文件与改动见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)，许可证见 [LICENSE](LICENSE)。工程包含所需业务源码，可独立运行。
 
 ## 启动
 
-准备 Node.js 22.13 或更高版本的 Node.js 22，以及 npm。解压源码包，进入 `article-workbench` 目录：
+准备 JDK 21、Node.js 24（至少 24.11.0，含 Corepack）。在项目目录执行：
 
 ```sh
-npm ci
-npm run setup
-npm run dev
+cd ui
+corepack pnpm install --frozen-lockfile
+corepack pnpm build
+cd ..
+./gradlew :backend:bootRun
 ```
 
-访问 `http://localhost:5173`。公开站点为 `/`，登录页为 `/login`，工作台为 `/workspace`。接口默认监听 `127.0.0.1:3001`。
+访问 http://localhost:8090 ，工作台为 http://localhost:8090/console/ 。初次启动自动初始化演示数据。Windows 使用 `gradlew.bat`。
 
-安装依赖需要联网。工程运行不依赖外部数据库、AI 服务或其他业务服务。Node.js 22 可能显示内置 SQLite 的实验特性提示，不影响启动。
+首次安装会下载构建工具和依赖，无需另外安装数据库或获取其他业务工程。
 
 ### 演示账号
 
-所有演示账号的密码均为 `Workbench2026!`。
+默认密码均为 `Workbench2026!`。
 
 | 账号      | 姓名       | 角色             |
 | --------- | ---------- | ---------------- |
@@ -59,66 +73,102 @@ npm run dev
 | publisher | 许言       | 发布人员         |
 | manager   | 内容负责人 | 编辑、审核、发布 |
 
-`npm run setup` 创建上述账号、一篇已发布文章和两篇草稿。再次运行会保留已有账号和文章。演示账号仅用于本题本地开发与验收。
+初始化包含一篇已发布文章和两篇草稿。重复启动保留已有账号与文章。可在首次启动前通过 `DEMO_PASSWORD` 指定演示口令；该配置不会修改已有账号的口令。
+
+### 前端开发
+
+保持后端运行，在另一个终端执行：
+
+```sh
+cd ui
+corepack pnpm dev
+```
+
+通过 http://localhost:3000/console/ 访问支持热更新的工作台，公开阅读仍访问后端 8090 端口。改变后端端口时，给前端设置 `API_PORT` 和 `VITE_PUBLIC_ORIGIN`。
 
 ## 验证与构建
 
-```sh
-npm run check
-npx playwright install chromium
-npm run test:e2e
-```
-
-`check` 执行类型检查、基础 API 测试和构建。浏览器测试使用独立临时数据库与 4178 端口，验证真实页面操作；完成后删除测试数据。这些测试覆盖起始工程的现有能力，需为新增业务补充验证。
-
-构建后可以由一个进程同时提供页面和接口：
+在项目目录运行：
 
 ```sh
-npm run build
-npm start
+./gradlew :backend:test
+cd ui
+corepack pnpm typecheck
+corepack pnpm test
+corepack pnpm build
+cd ..
+./gradlew :backend:bootJar
+cd ui
+corepack pnpm exec playwright install chromium
+corepack pnpm test:e2e
 ```
 
-访问 `http://localhost:3001`。初次运行前执行一次 `npm run setup`；正常重启只需 `npm start`。
+浏览器测试自动启动打包后的应用，使用独立内存数据库与 4187 端口。基础测试覆盖起始工程已有能力，新增业务需要补充验证。
+
+打包产物为 `backend/build/libs/article-workbench.jar`，包含后端、工作台静态资源及公开阅读模板。在项目目录执行：
+
+```sh
+java -jar backend/build/libs/article-workbench.jar
+```
+
+运行产物只需要 Java 21。按 Ctrl+C 停止，重新运行上述命令即可恢复服务。
 
 ## 数据与配置
 
-默认数据文件为 `data/workbench.sqlite`。需要修改配置时，将 `.env.example` 复制为 `.env` 并调整对应值。`PORT` 和 `HOST` 控制监听地址，`DATABASE_PATH` 指定数据文件，`APP_ORIGIN` 为页面来源，HTTPS 部署时将 `COOKIE_SECURE` 设为 `true`。
+默认数据目录为运行目录下的 `data`，使用 H2 文件数据库。开发启动与在项目目录运行 JAR 时使用同一数据目录。账号、文章在重启后保留，会话失效后重新登录。
 
-部署时使用 `npm ci`、`npm run setup`、`npm run build`，再运行 `npm start`，并持久化 `data` 目录。使用反向代理时将 `APP_ORIGIN` 设为对外地址。公开部署前须更换演示账号口令。
+| 环境变量          | 含义                     | 默认值                                |
+| ----------------- | ------------------------ | ------------------------------------- |
+| PORT              | 后端端口                 | 8090                                  |
+| HOST              | 监听地址                 | 127.0.0.1                             |
+| DATABASE_URL      | R2DBC 数据库地址         | 项目内 H2 文件库，见 application.yaml |
+| DATABASE_PASSWORD | 数据库口令               | 空                                    |
+| DEMO_DATA         | 初始化演示账号与文章     | true                                  |
+| DEMO_PASSWORD     | 新建演示账号的口令       | Workbench2026!                        |
+| COOKIE_SECURE     | Cookie 仅通过 HTTPS 发送 | false                                 |
 
-备份时先停止服务，再复制整个 `data` 目录；恢复时先停止服务，用完整备份替换该目录后启动。不要将数据库、会话、`.env` 或 `node_modules` 提交到仓库或打入交付源码包。
+部署时构建并运行 JAR，持久化数据目录；使用 HTTPS 时设置 `COOKIE_SECURE=true`。演示账号和示例文章用于本题开发与验收。
+
+备份时先停止应用，再复制完整 `data` 目录。恢复时停止应用，用完整备份替换该目录后启动。初始化文章为合成数据，可按设计重新初始化；候选人交付后的业务数据须在重启后保留。
 
 ## 代码结构
 
 ```text
-client/       React 页面、认证状态和 API 调用
-server/       HTTP 接口、权限、文章操作、会话与数据库
-shared/       前后端共享的数据类型
-tests/        API 集成测试与浏览器测试
-.github/      持续集成配置
+backend/
+  src/main/java/dev/workbench/   接口、认证、业务服务、数据库访问
+  src/main/resources/           配置、DDL、Thymeleaf 模板
+  src/test/                     后端测试
+ui/
+  src/views/                    登录、列表、编辑
+  src/components/               Vue 公共组件
+  src/stores/                   Pinia 认证状态
+  src/utils/                    日期工具
+  tests/                        单元测试、浏览器测试
+gradle/wrapper/                 Gradle Wrapper
 ```
 
-数据库当前包含 `users`、`sessions`、`articles` 三张表，定义在 `server/database.ts`。页面入口为 `client/main.tsx`，HTTP 入口为 `server/app.ts`，文章操作在 `server/articles.ts`。
+`ArticleService` 负责文章操作，`ArticleController` 提供接口，`PageController` 提供公开页面。数据库定义在 `backend/src/main/resources/schema.sql`，目前包含 users 和 articles 两张表。
 
 ### 现有接口
 
-| 方法与路径                         | 用途                                       |
-| ---------------------------------- | ------------------------------------------ |
-| `GET /api/health`                  | 服务及数据库检查                           |
-| `GET /api/session`                 | 当前登录账号                               |
-| `POST /api/session`                | 账号口令登录                               |
-| `DELETE /api/session`              | 退出登录                                   |
-| `GET /api/articles`                | 按权限查询文章，支持 `q`、`status`、`page` |
-| `POST /api/articles`               | 创建草稿                                   |
-| `GET /api/articles/:id`            | 读取工作台文章                             |
-| `PUT /api/articles/:id`            | 保存文章                                   |
-| `POST /api/articles/:id/publish`   | 发布文章                                   |
-| `POST /api/articles/:id/unpublish` | 取消发布                                   |
-| `GET /api/public/articles`         | 公开文章列表                               |
-| `GET /api/public/articles/:id`     | 公开文章详情                               |
+| 方法与路径                       | 用途                                 |
+| -------------------------------- | ------------------------------------ |
+| GET /api/health                  | 服务及数据库检查                     |
+| GET /api/csrf                    | 获取写请求使用的 CSRF token          |
+| GET /api/session                 | 当前账号                             |
+| POST /api/session                | 账号口令登录                         |
+| DELETE /api/session              | 退出                                 |
+| GET /api/articles                | 按权限查询文章，支持 q、status、page |
+| POST /api/articles               | 创建草稿                             |
+| GET /api/articles/:id            | 读取文章                             |
+| PUT /api/articles/:id            | 保存文章                             |
+| POST /api/articles/:id/publish   | 发布                                 |
+| POST /api/articles/:id/unpublish | 取消发布                             |
+| GET /api/public/articles         | 公开列表                             |
+| GET /api/public/articles/:id     | 公开详情                             |
 
-登录参数为 `username`、`password`。创建与保存参数为 `title`、`excerpt`、`body`，均为字符串；标题限 200 字符，摘要限 500 字符，正文限 50,000 字符。文章详情响应为 `{ article }`，列表为 `{ items, total, page, pageSize }`，错误为 `{ message }`。接口和数据结构可随业务实现调整。
+写请求需要保留 Cookie，并携带 `GET /api/csrf` 返回的 headerName 和 token。登录参数为 username、password。创建与保存参数为 title、excerpt、body，长度上限分别为 200、500、50,000 字符。详情返回 `{ article }`，列表返回 `{ items, total, page, size }` 及分页信息。接口和数据结构可随业务实现调整。
 
 ## 提交源码
 
-源码包不包含依赖和运行数据。首次解压后可以执行 `git init` 并提交当前工程建立基线；在仓库中开发时保留可辨认的修改记录。上传 GitHub 前检查 `.gitignore` 生效，仓库中不应包含演示运行数据或本地配置。
+源码包不包含依赖缓存、构建结果、数据库、会话或私人配置。解压后可以初始化 Git 并提交基线，交付时保留可辨认的修改记录及最终 commit。上传 GitHub 时保留许可证和复用来源，不包含面试官材料。

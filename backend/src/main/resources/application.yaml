@@ -1,0 +1,28 @@
+server:
+  address: ${HOST:127.0.0.1}
+  port: ${PORT:8090}
+  reactive:
+    session:
+      timeout: 8h
+      cookie:
+        http-only: true
+        same-site: strict
+        secure: ${COOKIE_SECURE:false}
+spring:
+  application:
+    name: article-workbench
+  r2dbc:
+    url: ${DATABASE_URL:r2dbc:h2:file:///./data/workbench?DB_CLOSE_ON_EXIT=FALSE}
+    username: sa
+    password: ${DATABASE_PASSWORD:}
+  sql:
+    init:
+      mode: always
+  thymeleaf:
+    cache: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+workbench:
+  demo-data: ${DEMO_DATA:true}
+  demo-password: ${DEMO_PASSWORD:Workbench2026!}

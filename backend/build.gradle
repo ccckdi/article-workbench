@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+}
+group = 'dev.workbench'
+version = '0.2.0'
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+repositories { mavenCentral() }
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:4.1.1')
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.85'
+    runtimeOnly 'io.r2dbc:r2dbc-h2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webflux-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+test { useJUnitPlatform() }
+tasks.register('copyUiDist', Copy) {
+    from '../ui/dist'
+    into layout.buildDirectory.dir('resources/main/static/console')
+}
+processResources.dependsOn copyUiDist
+tasks.register('copyPublicStyles', Copy) {
+    from '../ui/src/style.css'
+    into layout.buildDirectory.dir('resources/main/static')
+    rename 'style.css', 'public.css'
+}
+processResources.dependsOn copyPublicStyles
+bootJar {
+    archiveFileName = 'article-workbench.jar'
+    doFirst {
+        if (!file('../ui/dist/index.html').exists()) throw new GradleException('请先在 ui 目录运行 corepack pnpm build')
+    }
+}
+bootRun { workingDir rootProject.projectDir }

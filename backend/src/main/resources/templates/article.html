@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title th:text="${article.title + ' · 文章工作台'}"></title>
+    <link rel="stylesheet" href="/public.css" />
+  </head>
+  <body>
+    <div class="public-site">
+      <header class="public-header">
+        <a class="brand" href="/"
+          ><span class="brand-mark">文</span
+          ><span>文章工作台<small>ARTICLE WORKBENCH</small></span></a
+        ><a class="button secondary" href="/console/">进入工作台 →</a>
+      </header>
+      <main class="reader">
+        <a class="back-link" href="/">← 全部文章</a>
+        <article>
+          <p class="eyebrow">JOURNAL / 文章</p>
+          <h1 th:text="${article.title}"></h1>
+          <div class="reader-meta">
+            <span
+              class="avatar"
+              th:text="${#strings.substring(article.authorName,0,1)}"
+            ></span
+            ><span th:text="${article.authorName}"></span><span>·</span
+            ><time
+              th:text="${#temporals.format(article.publishedAt,'yyyy-MM-dd HH:mm','Asia/Shanghai')}"
+            ></time>
+          </div>
+          <p
+            th:if="${!#strings.isEmpty(article.excerpt)}"
+            class="reader-excerpt"
+            th:text="${article.excerpt}"
+          ></p>
+          <div class="reader-body" th:text="${article.body}"></div>
+        </article>
+      </main>
+      <footer class="public-footer">
+        <span>文章工作台</span><span>记录想法，让内容发生。</span>
+      </footer>
+    </div>
+  </body>
+</html>

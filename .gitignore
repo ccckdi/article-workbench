@@ -1,4 +1,10 @@
 node_modules/
+.gradle/
+build/
+.idea/
+*.iml
+*.mv.db
+*.trace.db
 dist/
 data/
 .env
