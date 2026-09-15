@@ -1,8 +1,8 @@
 {
   "name": "article-workbench",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "文章协作与内容运营考核起始工程",
+  "description": "文章协作与阅读分析考核起始工程",
   "license": "GPL-3.0-only",
   "packageManager": "pnpm@11.17.0",
   "engines": {

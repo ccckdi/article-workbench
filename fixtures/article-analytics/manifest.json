@@ -1,0 +1,26 @@
+{
+  "dataset": "article-analytics-2026-08",
+  "synthetic": true,
+  "version": "2.0",
+  "timezone": "Asia/Shanghai",
+  "analysisStart": "2026-08-01T00:00:00+08:00",
+  "analysisEndExclusive": "2026-08-15T00:00:00+08:00",
+  "exportCutoff": "2026-08-17T00:00:00+08:00",
+  "files": [
+    {
+      "name": "articles.csv",
+      "rows": 8,
+      "sha256": "08686edb89b28f206f48e95c3f008838ffb986d288463f729d2c6eb04d566c9a"
+    },
+    {
+      "name": "reading-events-01.csv",
+      "rows": 1246,
+      "sha256": "72f5f7f0b01eaa2e6d5a21232ae5275de240f2b68ef7b1eddf7f24ab4d21f737"
+    },
+    {
+      "name": "reading-events-02.csv",
+      "rows": 1293,
+      "sha256": "2b336b11e17186febc23520a131341449b2cf0f055a0e97d6de6110d03a3bacb"
+    }
+  ]
+}
